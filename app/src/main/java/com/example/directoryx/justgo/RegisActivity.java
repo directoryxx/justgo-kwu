@@ -1,0 +1,112 @@
+package com.example.directoryx.justgo;
+
+import android.content.Intent;
+import android.media.Image;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
+
+import com.example.directoryx.justgo.Model.Users;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+
+public class RegisActivity extends AppCompatActivity {
+
+    ImageView btnBack,imLogin;
+    private FirebaseAuth auth;
+    private EditText edemail, edpassword,edname,edemergencynumber;
+    DatabaseReference databaseArtists;
+    private ProgressBar progressBar;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_regis);
+
+        edemail = (EditText) findViewById(R.id.edemail);
+        edpassword = (EditText) findViewById(R.id.edpassword);
+        imLogin = (ImageView) findViewById(R.id.imLogin);
+        edname = (EditText) findViewById(R.id.fullname);
+        edemergencynumber = (EditText) findViewById(R.id.emernumber);
+
+
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        auth = FirebaseAuth.getInstance();
+
+        btnBack = (ImageView) findViewById(R.id.imageView6);
+
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent back = new Intent(RegisActivity.this,MainActivity.class);
+                startActivity(back);
+            }
+        });
+
+        imLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String email = edemail.getText().toString().trim();
+                String password = edpassword.getText().toString().trim();
+
+                if (TextUtils.isEmpty(email)) {
+                    Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (TextUtils.isEmpty(password)) {
+                    Toast.makeText(getApplicationContext(), "Enter password!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (password.length() < 6) {
+                    Toast.makeText(getApplicationContext(), "Password too short, enter minimum 6 characters!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                progressBar.setVisibility(View.VISIBLE);
+                //create user
+                auth.createUserWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(RegisActivity.this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                Toast.makeText(RegisActivity.this, "createUserWithEmail:onComplete:" + task.isSuccessful(), Toast.LENGTH_SHORT).show();
+                                progressBar.setVisibility(View.GONE);
+                                // If sign in fails, display a message to the user. If sign in succeeds
+                                // the auth state listener will be notified and logic to handle the
+                                // signed in user can be handled in the listener.
+                                if (!task.isSuccessful()) {
+                                    Toast.makeText(RegisActivity.this, "Authentication failed." + task.getException(),
+                                            Toast.LENGTH_SHORT).show();
+                                } else {
+                                    databaseArtists = FirebaseDatabase.getInstance().getReference("users");
+                                    FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser() ;
+                                    String nama = edname.getText().toString();
+                                    String emergencynumber = edemergencynumber.getText().toString();
+                                    String urlphoto = "https://community.yellowfinbi.com/public/avatars/50x50_c3ea0c1ed47ad928c2e921ab4734c21a.jpg";
+                                    String uid = currentFirebaseUser.getUid();
+                                    Users user = new Users(nama, emergencynumber, urlphoto,uid);
+                                    databaseArtists.child(uid).setValue(user);
+                                    startActivity(new Intent(RegisActivity.this, MainActivity.class));
+                                    finish();
+                                }
+                            }
+                        });
+            }
+        });
+
+
+    }
+}
