@@ -31,7 +31,7 @@ public class ListChatAdapter extends RecyclerView.Adapter<ListChatAdapter.ViewHo
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.fragment_chat,viewGroup,false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.userchat_card,viewGroup,false);
         return new ListChatAdapter.ViewHolder(view);
     }
 
@@ -48,7 +48,7 @@ public class ListChatAdapter extends RecyclerView.Adapter<ListChatAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-        return 0;
+        return mUsers.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
@@ -58,8 +58,8 @@ public class ListChatAdapter extends RecyclerView.Adapter<ListChatAdapter.ViewHo
         public ViewHolder(View itemView){
             super(itemView);
 
-            nama = itemView.findViewById(R.id.tvnama);
-            profile_image = itemView.findViewById(R.id.imageView3);
+            nama = itemView.findViewById(R.id.title);
+            profile_image = itemView.findViewById(R.id.thumbnail);
 
         }
     }

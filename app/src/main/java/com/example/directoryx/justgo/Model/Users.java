@@ -47,4 +47,8 @@ public class Users {
     public void setUid(String uid) {
         this.uid = uid;
     }
+
+    public String toString(){
+        return "nama : " + nama + "\nUid : " + uid ;
+    }
 }

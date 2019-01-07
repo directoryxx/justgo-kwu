@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.directoryx.justgo.Adapter.ListChatAdapter;
+import com.example.directoryx.justgo.Adapter.ListUserAdapter;
 import com.example.directoryx.justgo.Adapter.UserAdapter;
 import com.example.directoryx.justgo.Model.Chat;
 import com.example.directoryx.justgo.Model.ChatList;
@@ -64,12 +65,22 @@ public class ProfileFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
 
         recyclerView = view.findViewById(R.id.recycler_view);
+        LinearLayoutManager manager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(manager);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        //userAdapter = new ListChatAdapter(getContext(),mUsers);
+        //recyclerView.setAdapter(userAdapter);
+
+
+
+
+        //recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+
         fuser = FirebaseAuth.getInstance().getCurrentUser();
 
 
-        userLists = new ArrayList<>();
+        userLists = new ArrayList<ChatList>();
 
         reference = FirebaseDatabase.getInstance().getReference("chatslist").child(fuser.getUid());
         reference.addValueEventListener(new ValueEventListener() {
@@ -105,7 +116,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void chatList() {
-        mUsers = new ArrayList<>();
+        mUsers = new ArrayList<Users>();
         reference = FirebaseDatabase.getInstance().getReference("users");
 
         reference.addValueEventListener(new ValueEventListener() {
@@ -115,14 +126,16 @@ public class ProfileFragment extends Fragment {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()){
                     Users users = snapshot.getValue(Users.class);
                     for (ChatList chatList : userLists){
-                        if(users.getUid().equals(fuser.getUid())){
+                        if(users.getUid().equals(chatList.getId())){
                             mUsers.add(users);
-                            Log.d("chatabcd12",users.getUid());
                         }
                     }
                 }
+                Log.d("list", mUsers.toString());
                 userAdapter = new ListChatAdapter(getContext(),mUsers);
                 recyclerView.setAdapter(userAdapter);
+                //userAdapter.notifyDataSetChanged();
+
 
             }
 
