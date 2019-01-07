@@ -44,6 +44,7 @@ public class ChatFragment extends Fragment {
     MessageAdapter messageAdapter;
     List<Chat> mChat;
     RecyclerView recyclerView;
+    String desired_string;
 
 
 
@@ -71,6 +72,10 @@ public class ChatFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.activity_chat, container, false);
 
+        Bundle arguments = getArguments();
+        desired_string = arguments.getString("userid");
+        Toast.makeText(getContext(), desired_string, Toast.LENGTH_SHORT).show();
+
         fuser = FirebaseAuth.getInstance().getCurrentUser();
         //final String currentuser = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -82,7 +87,7 @@ public class ChatFragment extends Fragment {
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        readMessage(fuser.getUid(),"g8q0d4E96eZk4z9m9fBjJ4eSmvk2","default");
+        readMessage(fuser.getUid(),desired_string,"default");
 
 
 
@@ -96,7 +101,7 @@ public class ChatFragment extends Fragment {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String receiver = "g8q0d4E96eZk4z9m9fBjJ4eSmvk2";
+                String receiver = desired_string;
                 String messageText = messageArea.getText().toString();
                 if(!messageText.equals("")){
                     sendMessage(fuser.getUid(),receiver,messageText);
@@ -142,13 +147,13 @@ public class ChatFragment extends Fragment {
 
         final DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("chatslist")
                 .child(fuser.getUid())
-                .child("g8q0d4E96eZk4z9m9fBjJ4eSmvk2");
+                .child(desired_string);
 
         chatRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(!dataSnapshot.exists()){
-                    chatRef.child("id").setValue("g8q0d4E96eZk4z9m9fBjJ4eSmvk2");
+                    chatRef.child("id").setValue(desired_string);
                 }
             }
 

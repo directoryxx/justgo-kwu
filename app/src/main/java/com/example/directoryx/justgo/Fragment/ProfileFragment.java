@@ -74,6 +74,8 @@ public class ProfileFragment extends Fragment {
 
 
 
+
+
         //recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
 
